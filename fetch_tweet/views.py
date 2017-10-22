@@ -5,7 +5,7 @@ from gmplot import gmplot
 from requests_aws4auth import AWS4Auth
 from bs4 import BeautifulSoup
 
-awsauth = AWS4Auth('AKIAIEXN5M445JGBK5CA', 'bbY++JHJOhaqYZiG5Wa+mUm+OnqV8keUs/vXju4d', 'us-east-1', 'es')
+awsauth = AWS4Auth('', '', 'us-east-1', 'es')
 host = 'search-tweet-store-gsxdukg3yfbejw5oabidx4wf5y.us-east-1.es.amazonaws.com'
 es = Elasticsearch(
     hosts=[{'host': host, 'port': 443}],
