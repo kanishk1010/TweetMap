@@ -1,0 +1,32 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel = "stylesheet" type = "text/css" href="{% static 'css/style.css' %}">
+</head>
+
+<script src="https://www.w3schools.com/lib/w3.js"></script>
+<body>
+
+<h1>TweetMap</h1>
+
+
+<div class="dropdown">
+  <button class="dropbtn">Move your cursor here to select filter</button>
+  <div class="dropdown-content">
+    <a href="http://localhost:8000/load/pollution">Pollution</a>
+    <a href="http://localhost:8000/load/lgbtq">LGBTQ</a>
+    <a href="http://localhost:8000/load/vegan">Vegan</a>
+    <a href="http://localhost:8000/load/nk">North Korea</a>
+    <a href="http://localhost:8000/load/modi">Modi</a>
+  </div>
+</div>
+
+<div render-map="map.html"></div>
+
+<script>
+    w3.includeHTML();
+</script>
+
+</body>
+</html>
