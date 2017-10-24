@@ -2,6 +2,7 @@ import json
 from twitter import OAuth, TwitterStream
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
+import time
 
 ACCESS_TOKEN = ''
 ACCESS_SECRET = ''
@@ -44,3 +45,4 @@ for tweet in iterator:
         es.index(index="tweets", doc_type="tweet", body=document)
     except Exception as e:
         print(e)
+        time.sleep(30)
