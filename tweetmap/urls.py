@@ -17,6 +17,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^load/', include('fetch_tweet.urls')),
+    url(r'^', include('fetch_tweet.urls')),
     url(r'^admin/', admin.site.urls),
 ]
