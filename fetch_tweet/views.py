@@ -4,8 +4,8 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
 import googlemaps
 
-gmaps = googlemaps.Client(key='AIzaSyAlZCLQckOd17qOFDVyFJk9TN8mIvH4zMs')
-awsauth = AWS4Auth('AKIAIW4WGIXUESC3K4SQ', 'kiX8y+gNAHeduKXd8tURF1H3w1hRQ99bUIFw4axy', 'us-east-1', 'es')
+gmaps = googlemaps.Client(key='')
+awsauth = AWS4Auth('', '', 'us-east-1', 'es')
 host = 'search-tweet-store-gsxdukg3yfbejw5oabidx4wf5y.us-east-1.es.amazonaws.com'
 es = Elasticsearch(
     hosts=[{'host': host, 'port': 443}],
