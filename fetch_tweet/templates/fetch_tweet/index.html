@@ -8,48 +8,81 @@
 <body>
 
 <div class="dropdown" style="float:left">
-  <button class="dropbtn">Move your cursor here to select filter</button>
-  <div class="dropdown-content">
-    <a href="/pollution">Pollution</a>
-    <a href="/lgbtq">LGBTQ</a>
-    <a href="/vegan">Vegan</a>
-    <a href="/nk">North Korea</a>
-    <a href="/modi">Modi</a>
-  </div>
+    <button class="dropbtn">Move your cursor here to select filter</button>
+    <div class="dropdown-content">
+        <a href="/pollution">Pollution</a>
+        <a href="/lgbtq">LGBTQ</a>
+        <a href="/vegan">Vegan</a>
+        <a href="/nk">North Korea</a>
+        <a href="/modi">Modi</a>
+    </div>
 </div>
 
 <h1 style="text-align:center">TweetMap</h1>
 
 <div id="map" style="width:100%;height:500px;"></div>
-   <script>
-     var map;
-     function initMap() {
-         map = new google.maps.Map(document.getElementById('map'), {
-             center: {lat: 17.46, lng: 8.74},
-             zoom: 3
-         });
+<script>
+    var map;
+    var markers;
+    function initMap() {
+        var geocoder = new google.maps.Geocoder();
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 17.46, lng: 8.74},
+            zoom: 3
+        });
 
-         var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        markers = locations.map(function (location) {
+            return new google.maps.Marker({
+                position: location
+            });
+        });
+        console.log(markers.length);
 
-         var markers = locations.map(function (location, i) {
-             return new google.maps.Marker({
-                 position: location,
-                 label: labels[i % labels.length]
-             });
-         });
+        for (var i = 0; i< addresses.length; i++){
+            setTimeout(
+                geocoder.geocode({'address': addresses[i]}, function (results, status) {
+                    if (status === 'OK'){
+                        console.log(status, results[0].geometry.location);
+                        var temp_marker = new google.maps.Marker({
+                            position: results[0].geometry.location
+                        });
+                        markers.push(temp_marker);
+                        console.log(markers.length);
+                    }else{
+                        console.log(status);
+                    }
+                }), i * 100);
+        }
 
-         var markerCluster = new MarkerClusterer(map, markers,
-             {imagePath: 'http://kanishkstweetmap.us-east-1.elasticbeanstalk.com/static/images/m'});
-     }
+{#        addresses.forEach(function (address) {#}
+{#            geocoder.geocode({'address': address}, function (results, status) {#}
+{#                console.log(status);#}
+{#                if (status === 'OK'){#}
+{#                    markers.push(#}
+{#                        new google.maps.Marker({#}
+{#                            position: results[0].geometry.location#}
+{#                        })#}
+{#                    );#}
+{#                }#}
+{#            });#}
+{#        });#}
+        console.log(markers.length);
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'http://kanishkstweetmap.us-east-1.elasticbeanstalk.com/static/images/m'});
+    }
     var locations = [];
+    var addresses = [];
     {% for coordinate in coordinates %}
         var point = {lat: {{ coordinate.lat }}, lng: {{coordinate.lng}}};
         locations.push(point);
     {% endfor %}
-   </script>
-    <script type="text/javascript" src="{% static 'js/markerclusterer.js' %}">
-    </script>
-   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlZCLQckOd17qOFDVyFJk9TN8mIvH4zMs&callback=initMap"
-   async defer></script>
+    {% for location in locations %}
+        addresses.push("{{ location }}");
+    {% endfor %}
+</script>
+<script type="text/javascript" src="{% static 'js/markerclusterer.js' %}">
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlZCLQckOd17qOFDVyFJk9TN8mIvH4zMs&callback=initMap"
+        async defer></script>
 </body>
 </html>
