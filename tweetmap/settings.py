@@ -25,7 +25,7 @@ SECRET_KEY = '#p$&455u2nxo+=e+%hz)%7z)s0kid=6s72u!%!av2ayxb%*4pq'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['kanishkstweetmap.us-east-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['kanishkstweetmap.us-east-1.elasticbeanstalk.com', 'localhost']
 
 
 # Application definition
