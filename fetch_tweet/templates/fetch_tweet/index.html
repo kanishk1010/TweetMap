@@ -2,54 +2,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel = "stylesheet" type = "text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="dropdown" style="float:left">
-  <button class="dropbtn">Move your cursor here to select filter</button>
-  <div class="dropdown-content">
-    <a href="/pollution">Pollution</a>
-    <a href="/lgbtq">LGBTQ</a>
-    <a href="/vegan">Vegan</a>
-    <a href="/nk">North Korea</a>
-    <a href="/modi">Modi</a>
-  </div>
-</div>
-
-<h1 style="text-align:center">TweetMap</h1>
+<nav class="navbar navbar-light bg-light">
+    <img src="{% static "images/logo.png" %}" alt="Tweet-Map"/>
+    <form class="form-inline">
+        <input id = "search_limit" class="form-control mr-sm-2" type="search" value = 100 aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="button" >Set</button>
+    </form>
+    <label>
+    <input id="geocode" type="checkbox" data-toggle="toggle">
+        Geocoding toggle
+    </label>
+    <label>
+        <input id="random" type="checkbox" data-toggle="toggle">
+        Random toggle
+    </label>
+</nav>
 
 <div id="map" style="width:100%;height:500px;"></div>
-   <script>
-     var map;
-     function initMap() {
-         map = new google.maps.Map(document.getElementById('map'), {
-             center: {lat: 17.46, lng: 8.74},
-             zoom: 3
-         });
 
-         var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Keywords</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
-         var markers = locations.map(function (location, i) {
-             return new google.maps.Marker({
-                 position: location,
-                 label: labels[i % labels.length]
-             });
-         });
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-tabs">
+                <button class="btn btn-outline-success my-2 my-sm-0" value="pollution" onclick="openUrl(this)">pollution</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-outline-success my-2 my-sm-0" value="lgbtq" onclick="openUrl(this)">LGBTQ</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-outline-success my-2 my-sm-0" value="vegan" onclick="openUrl(this)">Vegan</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-outline-success my-2 my-sm-0" value="nk" onclick="openUrl(this)">North Korea</button>
+            </li>
+            <li class="nav-item">
+                <button class="btn btn-outline-success my-2 my-sm-0" value="modi" onclick="openUrl(this)">Modi</button>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="/">Reset <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<script>
 
-         var markerCluster = new MarkerClusterer(map, markers,
-             {imagePath: 'http://kanishkstweetmap.us-east-1.elasticbeanstalk.com/static/images/m'});
-     }
-    var locations = [];
-    {% for coordinate in coordinates %}
-        var point = {lat: {{ coordinate.lat }}, lng: {{coordinate.lng}}};
-        locations.push(point);
+    function openUrl(element){
+        var size_prefix = document.getElementById("search_limit").value + '/';
+        var geocode_toggle = document.getElementById("geocode").checked;
+        var geo_prefix;
+        if (geocode_toggle === true) geo_prefix = 1+'/';
+        else geo_prefix = 0 + '/';
+        var random_prefix;
+        var random_toggle = document.getElementById("random").checked;
+        if (random_toggle === true) random_prefix = 1;
+        else random_prefix = 0;
+        var url = '/'+element.value+'/';
+        window.open(url+size_prefix+geo_prefix+random_prefix,"_self");
+    }
+</script>
+
+<script>
+    var map;
+    function initMap() {
+        geocoder = new google.maps.Geocoder();
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 17.46, lng: 8.74},
+            zoom: 3
+        });
+
+        var markers = tweets.map(function (tweet) {
+            return new google.maps.Marker({
+                position: tweet.point,
+                title: tweet.tweet
+            });
+        });
+        var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: '/static/images/m'});
+    }
+    var tweets = [];
+    {% for tweet in tweets %}
+        var point = {lat: {{ tweet.latlng.lat }}, lng: {{tweet.latlng.lng}}};
+        var tweet = "{{ tweet.tweet }}";
+        tweets.push({"point": point, "tweet": tweet});
     {% endfor %}
-   </script>
-    <script type="text/javascript" src="{% static 'js/markerclusterer.js' %}">
-    </script>
-   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlZCLQckOd17qOFDVyFJk9TN8mIvH4zMs&callback=initMap"
-   async defer></script>
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script type="text/javascript" src="{% static 'js/markerclusterer.js' %}"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAlZCLQckOd17qOFDVyFJk9TN8mIvH4zMs&callback=initMap"
+        async defer></script>
 </body>
 </html>
