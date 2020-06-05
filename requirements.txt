@@ -1,6 +1,6 @@
 certifi==2017.7.27.1
 chardet==3.0.4
-Django==1.11.6
+Django==1.11.29
 docutils==0.14
 elasticsearch==5.4.0
 googlemaps==2.5.1
